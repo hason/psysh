@@ -90,12 +90,13 @@ class CallPass extends NamespaceAwarePass
      */
     public static function &callFunction($function, array $args = array(), array $references = array(), $declared = '', $called = false)
     {
+        $called = '' === $declared ? false : $called;
+
         if (is_array($function) && 2 == count($function) && version_compare(PHP_VERSION, '5.4', '>=')) {
             if (!array_key_exists(0, $function) || !array_key_exists(1, $function)) {
                 // PHP < 5.4.8 exits with code 139
                 throw new FatalErrorException('Array callback has to contain indices 0 and 1');
             }
-
             if (is_string($function[0])) {
                 $method = 'callStatic';
             } elseif (is_object($function[0])) {
@@ -125,7 +126,19 @@ class CallPass extends NamespaceAwarePass
             }
         }
 
-        $value = call_user_func_array($function, static::processParameters($ref, $args, $references));
+        if ('get_class' === $function && (empty($args) || null === reset($args)) && '' === $declared) {
+            trigger_error('get_class() called without object from outside a class', E_USER_WARNING);
+            $value = false;
+        } elseif ('get_called_class' === $function && empty($args)) {
+            if (false === $called) {
+                trigger_error('get_called_class() called from outside a class', E_USER_WARNING);
+            }
+            $value = $called;
+        } elseif ('get_parent_class' === $function && empty($args) && '' !== $declared) {
+            $value = get_parent_class($declared);
+        } else {
+            $value = call_user_func_array($function, static::processParameters($ref, $args, $references));
+        }
 
         return $value;
     }
@@ -148,6 +161,8 @@ class CallPass extends NamespaceAwarePass
      */
     public static function &callMethod($object, $method, array $args = array(), array $references = array(), $declared = '', $called = false)
     {
+        $called = '' === $declared ? false : $called;
+
         if (!is_string($method)) {
             throw new FatalErrorException('Method name must be a string');
         }
@@ -179,6 +194,8 @@ class CallPass extends NamespaceAwarePass
      */
     public static function &callStatic($class, $method, array $args = array(), array $references = array(), $declared = '', $called = false)
     {
+        $called = '' === $declared ? false : $called;
+
         if ('self' === $class) {
             if ('' === $declared) {
                 throw new FatalErrorException('Cannot access self:: when no class scope is active');

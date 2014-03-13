@@ -164,6 +164,32 @@ try {
             array('$f = array("DateTime", "getLastErrors"); $f();'),
             array('$f = array(new \DateTime, "getLastErrors"); $f();'),
             array('class A { protected function foo() { return 5; }  public function __invoke() { $f = function() { return $this->foo(); }; return $f();}}; $a = new A; echo $a();'),
+
+            // get_class, get_called_class and get_parent_class
+            array('var_dump(get_class());'),
+            array('var_dump(get_class(null));'),
+            array('var_dump(get_called_class());'),
+            array('var_dump(get_called_class(null));'),
+            array('function f() { return get_class(); } var_dump(f());'),
+            array('function f() { return get_class(null); } var_dump(f());'),
+            array('function f() { return get_called_class(); } var_dump(f());'),
+            array('function f() { return get_called_class(null); } var_dump(f());'),
+
+            array('$foo = 5; var_dump(get_class($foo));'),
+            array('function bar() { return new StdClass(); } var_dump(get_class(bar()));'),
+            array('$foo = "foo"; var_dump(get_called_class($foo));'),
+            array('function bar() { return new stdClass(); } var_dump(get_called_class(bar()));'),
+            array('function foo($bar) { return get_class($bar); } var_dump(foo("a"));'),
+            array('function foo($bar) { return get_called_class($bar); } var_dump(foo("a"));'),
+            array('class Foo { function bar() { return get_class(); } }'),
+            array('class Foo { function bar() { return get_class(null); } }'),
+            array('class Foo { function bar() { return get_called_class(); } }'),
+            array('class Foo { function bar() { return get_called_class(null); } }'),
+
+            array('trait Foo { function bar() { return get_class(); } }'),
+            array('trait Foo { function bar() { return get_class(null); } }'),
+            array('trait Foo { function bar() { return get_called_class(); } }'),
+            array('trait Foo { function bar() { return get_called_class(null); } }'),
         );
     }
 }
