@@ -635,11 +635,13 @@ class Shell extends Application
      */
     public function handleError($errno, $errstr, $errfile, $errline)
     {
+        // catchable fatal error
         if ($errno & error_reporting()) {
-            ErrorException::throwException($errno, $errstr, $errfile, $errline);
+            $this->writeException(new ErrorException($errstr, 0, $errno, $errfile, $errline));
+            //ErrorException::throwException($errno, $errstr, $errfile, $errline);
         } else {
             // log it and continue...
-            $this->writeException(new ErrorException($errstr, 0, $errno, $errfile, $errline));
+            //$this->writeException(new ErrorException($errstr, 0, $errno, $errfile, $errline));
         }
     }
 
