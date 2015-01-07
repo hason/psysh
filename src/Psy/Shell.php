@@ -235,9 +235,7 @@ class Shell extends Application
 
         $this->readline->readHistory();
 
-        // if ($this->config->useReadline()) {
-        //     readline_completion_function(array($this, 'autocomplete'));
-        // }
+        $this->readline->setAutocompleter(new Autocompleter($this));
 
         $this->output->writeln($this->getHeader());
 
@@ -775,9 +773,9 @@ class Shell extends Application
      *
      * @return mixed Array possible completions for the given input, if any.
      */
-    protected function autocomplete($text)
+    public function autocomplete($text)
     {
-        $info = readline_info();
+        //$info = readline_info();
         // $line = substr($info['line_buffer'], 0, $info['end']);
 
         // Check whether there's a command for this

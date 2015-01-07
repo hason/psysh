@@ -18,9 +18,9 @@ use Psy\Output\OutputPager;
 use Psy\Output\ShellOutput;
 use Psy\Presenter\PresenterManager;
 use Psy\Readline\GNUReadline;
+use Psy\Readline\HoaReadline;
 use Psy\Readline\Libedit;
 use Psy\Readline\Readline;
-use Psy\Readline\Transient;
 use XdgBaseDir\Xdg;
 
 /**
@@ -573,6 +573,10 @@ class Configuration
      */
     private function getReadlineClass()
     {
+        if (HoaReadline::isSupported()) {
+            return 'Psy\Readline\HoaReadline';
+        }
+
         if ($this->useReadline()) {
             if (GNUReadline::isSupported()) {
                 return 'Psy\Readline\GNUReadline';
